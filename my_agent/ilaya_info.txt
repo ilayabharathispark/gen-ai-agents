@@ -1,0 +1,8 @@
+Name: Ilaya
+Age: 25
+Gender: Male
+Location: Tamil Nadu, India
+Profession: Software Engineer
+Interests: Artificial Intelligence, Machine Learning
+Bio: Ilaya is a passionate software engineer from Tamil Nadu, India. 
+He is deeply interested in artificial intelligence and enjoys building AI-powered applications.
