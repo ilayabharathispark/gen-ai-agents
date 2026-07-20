@@ -1,0 +1,5 @@
+retieval_api Cloud_run  deployment
+==================================
+
+gcloud builds submit --tag asia-south1-docker.pkg.dev/ilaya-bharathi-murugan/agent/rag-retrieval-api:v1
+gcloud run deploy rag-retrieval-api --image asia-south1-docker.pkg.dev/ilaya-bharathi-murugan/agent/rag-retrieval-api:v1 --region asia-south1 --platform managed --allow-unauthenticated --memory 4Gi --set-env-vars QDRANT_END_POINT="<get it from .env local>" --set-env-vars QDRANT_API="<get it from .env local>"

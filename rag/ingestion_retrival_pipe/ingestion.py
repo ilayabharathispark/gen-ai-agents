@@ -15,14 +15,14 @@ load_dotenv()
 # CONFIGURATION
 # ==========================================================
 
-PDF_PATH = "D:\\my-projects\\my-ai-agents\\rag\\ilayabharathi_summary.pdf"
+PDF_PATH = "D:\\my-projects\\my-ai-agents\\rag\\ilayabharathi_summary.pdf" #add your pdf path to ingest
 
-QDRANT_URL = os.getenv("QDRANT_END_POINT")
-QDRANT_API_KEY = os.getenv("QDRANT_API")
+QDRANT_URL = os.getenv("QDRANT_END_POINT") #add your qdrant url
+QDRANT_API_KEY = os.getenv("QDRANT_API") #add your api key
 
-COLLECTION_NAME = "rag_demo"
+COLLECTION_NAME = "rag_demo" #add your collection name or index name
 
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2" #add your embedding model
 
 
 # ==========================================================
@@ -105,7 +105,7 @@ else:
 
 
 # ==========================================================
-# PREPARE POINTS
+# PREPARE POINTS 
 # ==========================================================
 
 points = []
@@ -126,7 +126,7 @@ for doc, vector in zip(chunks, embeddings):
 
 
 # ==========================================================
-# UPSERT TO QDRANT
+# UPSERT TO QDRANT (index the data to vector database qdrant)
 # ==========================================================
 
 client.upsert(

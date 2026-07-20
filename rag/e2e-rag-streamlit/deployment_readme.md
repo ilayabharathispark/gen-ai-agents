@@ -40,11 +40,11 @@ We have executed automated browser subagent tests showing successful startup, dy
 To build your docker container and deploy it, run the following commands in your prompt:
 ```bash
 # 1. Build and push image to Google Artifact Registry
-gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/rag-streamlit:latest .
+gcloud builds submit --tag gcr.io/YOUR_PROJECT_ID/ilaya-rag-pdf:latest .
 
 # 2. Deploy to Cloud Run (passing environment arguments and setting 4Gi memory)
-gcloud run deploy rag-streamlit \
-  --image gcr.io/YOUR_PROJECT_ID/rag-streamlit:latest \
+gcloud run deploy ilaya-rag-pdf \
+  --image gcr.io/YOUR_PROJECT_ID/ilaya-rag-pdf:latest \
   --platform managed \
   --allow-unauthenticated \
   --memory 4Gi \
