@@ -59,7 +59,6 @@ def ask_cloud_rag_service(query: str) -> str:
     Use this tool whenever the user asks about:
 
     - Ilaya Bharathi
-    - Gayathri
     - Alice
     - personal profiles
     - resumes
@@ -109,7 +108,6 @@ answer normally using your own knowledge.
 If the user asks about
 
 - Ilaya Bharathi
-- Gayathri
 - Alice
 - resumes
 - personal profiles
