@@ -50,7 +50,7 @@ bigquery_toolset = McpToolset(
 
 # Root agent configuration
 root_agent = Agent(
-    model="groq/meta-llama/llama-4-scout-17b-16e-instruct", #gemini-2.5-flash
+    model="gemini-2.5-flash", #gemini-2.5-flash is recoommended for GCP tool calls
     name='salary_agent',
     description='An agent specialized in querying employee salary information and statistics from Google BigQuery.',
     instruction=(

@@ -1,5 +1,8 @@
 from . import observability
 from google.adk.agents import Agent
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_current_time() -> dict:
     """Returns the current time."""
@@ -19,7 +22,7 @@ def add_numbers(a: int, b: int) -> dict:
 
 root_agent = Agent(
     name="demo_agent",
-    model="gemini-2.5-flash",
+    model="groq/llama-3.3-70b-versatile", #gemini-2.5-flash",
     description="Simple ADK demo agent",
     instruction="""
 You are a helpful assistant.
