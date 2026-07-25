@@ -47,7 +47,7 @@ python -m venv .venv
 .venv\Scripts\activate.bat
 
 # Activate it (macOS / Linux)
-source .venv/bin/activate
+source .venv/Scripts/activate
 ```
 
 > ✅ Your terminal prompt should now show `(.venv)` indicating the environment is active.

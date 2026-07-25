@@ -1,0 +1,58 @@
+[
+    {
+        "id": "17526c68-2690-4387-89db-eea8a842fb9d",
+        "source": "Benefits_Guide.pdf",
+        "page": 0,
+        "text_preview": "Benefits Guide\nHealth Insurance\nCompany provides family health insurance up to ■500,000.\nProvident F...",
+        "vector_dimension": 384,
+        "vector_sample": [
+            0.0018303393153473735,
+            0.0496952123939991,
+            -0.04548715800046921,
+            -0.015256131999194622,
+            0.02930017001926899
+        ]
+    },
+    {
+        "id": "d9b49483-ec27-462b-b29c-35d5f6faf1e3",
+        "source": "Employee_Directory.pdf",
+        "page": 0,
+        "text_preview": "Employee Directory\nEngineering\nAlice Johnson - Senior Data Engineer - alice.johnson@example.com\nHR\nP...",
+        "vector_dimension": 384,
+        "vector_sample": [
+            -0.05378958582878113,
+            0.012379555962979794,
+            -0.06258230656385422,
+            0.006321674212813377,
+            0.01102837361395359
+        ]
+    },
+    {
+        "id": "e33851c1-bad4-4dad-a15e-0ebfa38a8b36",
+        "source": "Employee_Handbook.pdf",
+        "page": 0,
+        "text_preview": "Employee Handbook\nLeave Policy\nEmployees receive 20 paid leave days annually, 12 sick leave days, an...",
+        "vector_dimension": 384,
+        "vector_sample": [
+            0.08638427406549454,
+            0.008292265236377716,
+            0.06161040812730789,
+            0.011318822391331196,
+            0.09335381537675858
+        ]
+    },
+    {
+        "id": "0e7713fa-da46-4d5b-a2d7-2c69d848b6c5",
+        "source": "HR_Policies.pdf",
+        "page": 0,
+        "text_preview": "HR Policies\nCode of Conduct\nAll employees must maintain professionalism, protect confidential inform...",
+        "vector_dimension": 384,
+        "vector_sample": [
+            0.04836771637201309,
+            0.021226147189736366,
+            -0.08282220363616943,
+            0.050866566598415375,
+            0.004686485510319471
+        ]
+    }
+]

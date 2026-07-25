@@ -1,0 +1,27 @@
+[
+    {
+        "chunk_index": 113,
+        "page": 0,
+        "content": "Professional Profile Summary\nAbout\nThis profile is generated from our conversations and summarizes your professional journey,\ninterests, and goals. Medical information has been intentionally excluded.\nProfessional Snapshot\nName: Ilayabharathi M\nRole: Senior Software Engineer – Data Engineering\nExperience: Approximately 5 years in Data Engineering and Big Data.\nCore Expertise\n Apache Spark (Scala & PySpark)\n Hadoop, Hive, SQL, BigQuery"
+    },
+    {
+        "chunk_index": 114,
+        "page": 0,
+        "content": "Core Expertise\n Apache Spark (Scala & PySpark)\n Hadoop, Hive, SQL, BigQuery\n Google Cloud Platform (Dataproc, Dataflow, BigQuery, GCS, Pub/Sub, Composer)\n ETL & Data Pipelines\n CI/CD and Jenkins\n Python for automation and AI applications\nAI & Agentic AI\nStrong interest in Agentic AI. Hands-on experience with: Google ADK Model Context Protocol\n(MCP) Custom MCP servers RAG pipelines using Qdrant and embeddings Vector databases and\nLLM integrations Cloud Run deployment\nNotable Projects"
+    },
+    {
+        "chunk_index": 115,
+        "page": 0,
+        "content": "LLM integrations Cloud Run deployment\nNotable Projects\n HR Salary Agent using Google ADK and custom MCP.\n BigQuery MCP server.\n Retrieval-Augmented Generation (RAG) pipelines with vector databases.\n Production-style data ingestion and transformation pipelines on GCP.\nLearning Focus\nCurrently focusing on: Advanced Agentic AI architectures LangGraph concepts Google ADK\necosystem MCP deployment patterns Production-grade RAG systems\nCareer Highlights\n Senior Software Engineer at EPAM."
+    },
+    {
+        "chunk_index": 116,
+        "page": 0,
+        "content": "Career Highlights\n Senior Software Engineer at EPAM.\n Strong background in Big Data Engineering.\n Interested in AI-powered Data Engineering solutions.\n Preparing for advanced AI Agent and Data Engineering interviews.\nPersonal Interests\n Building AI applications.\n Learning emerging AI technologies.\n PC gaming.\n Continuous technical upskilling.\nStrengths"
+    },
+    {
+        "chunk_index": 117,
+        "page": 1,
+        "content": " Quick learner\n Strong problem-solving ability\n Comfortable with cloud-native architectures\n Enjoys building end-to-end systems rather than isolated components\nFuture Vision\nTo become an expert AI/Data Engineer capable of designing enterprise-scale autonomous agents,\nproduction RAG platforms, and cloud-native AI solutions."
+    }
+]

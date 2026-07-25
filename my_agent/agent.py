@@ -1,3 +1,4 @@
+from . import observability #this import is mandatory for langsmith tracing
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -11,18 +12,17 @@ import sys
 # Load environment variables from .env file
 load_dotenv()
 
-# GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
 # Path to the info file (same folder as this script)
 INFO_FILE = Path(__file__).parent / "ilaya_info.txt"
 
 CURRENT_DIR = Path(__file__).parent
 PROJECT_ROOT = CURRENT_DIR.parent
 MCP_SERVER_PATH = PROJECT_ROOT / "my_agent" / "custom_mcp.py"
+
+
 # ── Sub-agent: handles web search (built-in tool only) ──────────────────────
 search_agent = Agent(
-    model='gemini-2.5-flash',
+    model='gemini-2.5-flash', #groq/llama-3.3-70b-versatile', # gemini-2.5-flash',
     name='search_agent',
     description='Searches the web for up-to-date information.',
     instruction='Search the web and return accurate, concise answers.',
@@ -39,14 +39,6 @@ basic_mcp_toolset = McpToolset(
     )
 )
 
-
-# ── Custom function tool ─────────────────────────────────────────────────────
-# def ilaya_details():
-#     """
-#     Use this function when the user asks about Ilaya.
-#     """
-#     return INFO_FILE.read_text(encoding="utf-8")
-
 # ── Cloud RAG service tool ───────────────────────────────────────────────────
 # RAG integration
 # ── Cloud RAG service tool ───────────────────────────────────────────────────
@@ -58,11 +50,10 @@ def ask_cloud_rag_service(query: str) -> str:
     """
     Use this tool whenever the user asks about:
 
-    - Ilaya Bharathi
-    - Gayathri
-    - Alice
-    - personal profiles
-    - resumes
+    - hr_policies
+    - benefits
+    - leave_policy
+    - employee handbook
     - uploaded PDFs
     - documents stored in the knowledge base
     - anything that might exist in the RAG database
@@ -76,14 +67,14 @@ def ask_cloud_rag_service(query: str) -> str:
         # Route to your API's expected request body format
         payload = {
             "query": query,
-            "collection": "rag_guest-all",
+            "collection": "my_agent_collection",
             "limit": 3
         }
         headers = {
             "Content-Type": "application/json"
         }
         
-        response = requests.post(CLOUD_RUN_URL, json=payload, headers=headers, timeout=12)
+        response = requests.post(CLOUD_RUN_URL, json=payload, headers=headers, timeout=30)
         if response.status_code == 200:
             # Parse answer/context from your API response JSON block
             data = response.json()
@@ -97,7 +88,7 @@ def ask_cloud_rag_service(query: str) -> str:
 
 # ── Root agent: uses custom functions + delegates search to search_agent ─────
 root_agent = Agent(
-    model='groq/llama-3.3-70b-versatile', #gemini-2.5-flash',
+    model='gemini-2.5-flash', #groq/llama-3.3-70b-versatile', #gemini-2.5-flash',
     name='root_agent',
     description='A helpful assistant for user questions.',
     instruction="""
@@ -108,15 +99,13 @@ answer normally using your own knowledge.
 
 If the user asks about
 
-- Ilaya Bharathi
-- Gayathri
-- Alice
-- resumes
-- personal profiles
-- uploaded documents
-- PDF contents
-- company documents
-- anything stored in the knowledge base
+    - hr_policies
+    - benefits
+    - leave_policy
+    - employee handbook
+    - uploaded PDFs
+    - documents stored in the knowledge base
+    - anything that might exist in the RAG database
 
 you MUST call the ask_cloud_rag_service tool.
 

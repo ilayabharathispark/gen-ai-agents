@@ -4,8 +4,8 @@ import json
 url = "https://rag-retrieval-api-640900979202.asia-south1.run.app/search"
 
 payload = {
-    "collection": "rag_guest-all",
-    "query": "who is ilaya ?",
+    "collection": "my_agent_collection",
+    "query": "can you explain the benefits?",
     "limit": 3
 }
 
