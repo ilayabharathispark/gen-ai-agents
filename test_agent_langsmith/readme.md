@@ -1,7 +1,7 @@
 # Google ADK Agent with LangSmith Observability
 
 A production-ready Google ADK Agent integrated with LangSmith for AI observability and deployable on Google Cloud Run.
-
+langsmith : https://smith.langchain.com/
 ---
 
 # Architecture
