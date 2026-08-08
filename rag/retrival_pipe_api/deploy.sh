@@ -8,7 +8,7 @@ echo "=========================================================="
 gcloud builds submit --tag asia-south1-docker.pkg.dev/ilaya-bharathi-murugan/agent/rag-retrieval-api:v1
 
 echo "=========================================================="
-echo "☸️ Deployment: deploying to Cloud Run (rag-retrieval-api)..."
+echo "☸️ Deployment: deploying to Cloud Run (rag-retrieval-api)... unauthenticated access so anyone can access it without apikey"
 echo "=========================================================="
 gcloud run deploy rag-retrieval-api \
   --image asia-south1-docker.pkg.dev/ilaya-bharathi-murugan/agent/rag-retrieval-api:v1 \

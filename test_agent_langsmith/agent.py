@@ -22,7 +22,7 @@ def add_numbers(a: int, b: int) -> dict:
 
 root_agent = Agent(
     name="demo_agent",
-    model="groq/llama-3.3-70b-versatile", #gemini-2.5-flash",
+    model="gemini-2.5-flash", #gemini-2.5-flash",
     description="Simple ADK demo agent",
     instruction="""
 You are a helpful assistant.
