@@ -13,6 +13,8 @@ from langchain_core.tools import tool
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from google.cloud import bigquery
+from tavily import TavilyClient
+# from .tools import search_engine
 
 # Load Environment Variables
 load_dotenv()
@@ -70,8 +72,17 @@ def get_my_details() -> str:
     Domain: Data Engineering
     """
 
+@tool
+def search_engine(query: str) -> str:
+    """Search the latest information from web."""
+    client = TavilyClient(os.getenv("TAVILY_API_KEY"))
+    response = client.search(
+        query=query,
+        search_depth="advanced"
+    )
+    return response
 
-tools = [execute_bigquery_sql_query, get_my_details]
+tools = [execute_bigquery_sql_query, get_my_details, search_engine]
 
 
 # --------------------------------------------------
@@ -89,12 +100,33 @@ llm_with_tools = llm.bind_tools(tools)
 # 4. Define Nodes
 # --------------------------------------------------
 
+# def chatbot(state: State):
+
+#     print("\n========== STATE LOADED ==========")
+
+#     for i, message in enumerate(state["messages"]):
+#         print(f"\nMessage {i}:")
+#         print("Type:", type(message).__name__)
+#         print("Content:", message.content)
+
+#     print("==================================\n")
+
+#     system_prompt = """..."""
+
+#     messages = [SystemMessage(content=system_prompt)] + state["messages"]
+
+#     response = llm_with_tools.invoke(messages)
+
+#     return {
+#         "messages": [response]
+#     }
 def chatbot(state: State):
-    system_prompt = """You are a helpful assistant. You have access to a Google Cloud BigQuery database containing information about employees and departments, and a tool to retrieve the user's details.
+     system_prompt = """You are a helpful assistant. You have access to a Google Cloud BigQuery database containing information about employees and departments, and a tool to retrieve the user's details.
 
 The available BigQuery tables are:
 
 1. Table: `ilaya-bharathi-murugan.bharathi.employee`
+
 Columns:
 - employee_id: INT64
 - name: STRING
@@ -103,24 +135,38 @@ Columns:
 - salary: FLOAT64
 
 2. Table: `ilaya-bharathi-murugan.bharathi.department`
+
 Columns:
 - department_id: INT64
 - department_name: STRING
 - manager_name: STRING
 - location: STRING
 
+Conversation Context:
+- The messages provided to you include the conversation history for the current user.
+- Use the previous messages as context when answering the current question.
+- If the user previously provided information in the conversation, such as their name, family details, role, experience, preferences, or other facts, use that information when it is relevant to the current question.
+- Do not say that you cannot remember previous information when that information is present in the conversation history.
+- Treat information provided by the user in previous messages as available conversation context.
+
 Instructions:
-1. If the user asks questions about employee records, salaries, departments, averages, or counts, you must use the `execute_bigquery_sql_query` tool to run a standard BigQuery standard SQL query. Always query using fully qualified table names (e.g. `ilaya-bharathi-murugan.bharathi.employee`).
-2. If the user asks about any ilayabharathi's details, their experience, role, or domain, use the `get_my_details` tool.
-3. If the user asks about general questions, answer them directly. based on your knowledge.
-4. Be clear and explain the results cleanly to the user. Do not mention internal implementation details or tool-calling specifics.
+
+1. If the user asks questions about employee records, salaries, departments, averages, or counts, you must use the `execute_bigquery_sql_query` tool to run a standard BigQuery SQL query. Always query using fully qualified table names (e.g. `ilaya-bharathi-murugan.bharathi.employee`).
+
+2. If the user asks about any Ilayabharathi's details, their experience, role, or domain, use the `get_my_details` tool.
+
+3. If the user asks about general questions, answer them directly based on your knowledge and the search_engine tool when current or external information is required.
+
+4. Use relevant information from the conversation history when answering questions.
+
+5. Be clear and explain the results cleanly to the user. Do not mention internal implementation details or tool-calling specifics.
 """
 
-    messages = [SystemMessage(content=system_prompt)] + state["messages"]
-    response = llm_with_tools.invoke(messages)
-    return {
+     messages = [SystemMessage(content=system_prompt)] + state["messages"]
+     response = llm_with_tools.invoke(messages)
+     return {
         "messages": [response]
-    }
+     }
 
 
 tool_node = ToolNode(tools)
@@ -155,8 +201,26 @@ graph_builder.add_conditional_edges(
 )
 graph_builder.add_edge("tools", "chatbot")
 
+
+from langchain_google_cloud_sql_pg import (
+    PostgresEngine,
+    PostgresSaver
+)
+
+engine = PostgresEngine.from_instance(
+    project_id=os.getenv("CLOUD_SQL_PROJECT_ID"), # check these values in .env file if not present, then go to cloud.google.com -> Cloud SQL -> create postgresql instance -> select your instance -> overview
+    region=os.getenv("CLOUD_SQL_REGION"),
+    instance=os.getenv("CLOUD_SQL_INSTANCE"),
+    database=os.getenv("CLOUD_SQL_DATABASE"),
+    user=os.getenv("CLOUD_SQL_USER"),
+    password=os.getenv("CLOUD_SQL_PASSWORD")
+)
+
+# engine.init_checkpoint_table()
+
+checkpointer = PostgresSaver.create_sync(engine)
 # Compile graph
-graph = graph_builder.compile()
+graph = graph_builder.compile(checkpointer=checkpointer)
 
 
 # --------------------------------------------------
@@ -165,11 +229,17 @@ graph = graph_builder.compile()
 
 if __name__ == "__main__":
     # Test 1: Query database
-    print("\n--- Test 1: BQ Query ---")
-    query_1 = "who is ilayabharathi?"
+    print("\n---Cooking---")
+    query_1 = "what is my mother name?"
+    config = {
+        "configurable": {
+            "thread_id": "ilaya"
+        }
+    }
     result_1 = graph.invoke({
         "messages": [HumanMessage(content=query_1)]
-    })
+    },config
+    )
     
-    print("\nFinal Answer 1:")
-    print(result_1["messages"])
+    print("---Cooked---")
+    print(result_1["messages"][-1].content)
