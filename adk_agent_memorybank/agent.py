@@ -1,24 +1,31 @@
-
-from dotenv import load_dotenv
 import os
-import langsmith
+from dotenv import load_dotenv
+
+# Loads .env when running locally.
+# On Cloud Run, these variables are already provided by the environment.
 load_dotenv()
+
+import langsmith
+
+print("======================================")
+print("MY AGENT FILE LOADED")
+print("LangSmith version:", langsmith.__version__)
+print("LANGSMITH_TRACING:", os.getenv("LANGSMITH_TRACING"))
+print("LANGSMITH_PROJECT:", os.getenv("LANGSMITH_PROJECT"))
+print("LANGSMITH_ENDPOINT:", os.getenv("LANGSMITH_ENDPOINT"))
+print("LANGSMITH_API_KEY SET:", bool(os.getenv("LANGSMITH_API_KEY")))
+print("======================================")
 
 from langsmith.integrations.google_adk import configure_google_adk
 
-print("========== LANGSMITH ==========")
-print("Version:", langsmith.__version__)
-print("Module:", langsmith.__file__)
-print("TRACING:", os.getenv("LANGSMITH_TRACING"))
-print("PROJECT:", os.getenv("LANGSMITH_PROJECT"))
-print("ENDPOINT:", os.getenv("LANGSMITH_ENDPOINT"))
-print("API KEY SET:", bool(os.getenv("LANGSMITH_API_KEY")))
-print("===============================")
+print("Calling configure_google_adk()")
 
 configure_google_adk(
-    project_name = os.getenv("LANGSMITH_PROJECT")
+    project_name=os.getenv("LANGSMITH_PROJECT")
 )
- #this import is mandatory for langsmith tracing
+
+print("configure_google_adk() completed")
+
 from google.adk.agents import Agent
 from google.adk.tools.preload_memory_tool import PreloadMemoryTool
 from google.adk.tools.load_memory_tool import LoadMemoryTool
