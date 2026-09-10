@@ -1,4 +1,9 @@
+import os
 import importlib.metadata
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 print("========== PACKAGE VERSIONS ==========")
 
@@ -8,28 +13,15 @@ for package in [
     "langsmith",
 ]:
     try:
-        print(
-            package,
-            "=",
-            importlib.metadata.version(package)
-        )
+        print(f"{package} = {importlib.metadata.version(package)}")
     except Exception as e:
-        print(package, "VERSION ERROR:", str(e))
+        print(f"{package} VERSION ERROR: {e}")
 
 print("======================================")
-
-import os
-from dotenv import load_dotenv
-
-# Loads .env when running locally.
-# On Cloud Run, these variables are already provided by the environment.
-load_dotenv()
 
 import langsmith
 
-print("======================================")
-print("MY AGENT FILE LOADED")
-print("LangSmith version:", langsmith.__version__)
+print("========== LANGSMITH CONFIG ==========")
 print("LANGSMITH_TRACING:", os.getenv("LANGSMITH_TRACING"))
 print("LANGSMITH_PROJECT:", os.getenv("LANGSMITH_PROJECT"))
 print("LANGSMITH_ENDPOINT:", os.getenv("LANGSMITH_ENDPOINT"))
