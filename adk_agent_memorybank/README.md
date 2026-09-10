@@ -1,15 +1,16 @@
 # Google ADK Agent with Memory Bank Integration
 
-This project demonstrates how to build and deploy an AI Agent using the **Google Agent Development Kit (ADK)** integrated with persistent **Memory Bank** capabilities and custom tool calling.
+This project demonstrates how to build, test, and deploy an AI Agent using the **Google Agent Development Kit (ADK)** integrated with persistent **Memory Bank** capabilities, custom tool calling, and automated CI/CD deployment to **Google Cloud Run**.
 
 ---
 
 ## 📌 Features
 
-- **Agent Engine & Memory Bank Integration**: Persists user interactions and context across agent sessions using Google ADK's `PreloadMemoryTool` and `after_agent_callback`.
+- **Agent Engine & Memory Bank Integration**: Persists user interactions and context across agent sessions using Google ADK's `LoadMemoryTool` and `after_agent_callback`.
 - **Custom Tool Integration**: Includes a custom `employee_details` Python function tool to query employee metadata.
 - **Gemini 2.5 Model**: Powered by Google's `gemini-2.5-flash`.
-- **Local & Cloud Execution**: Test locally using Google ADK CLI or provision a Vertex AI Agent Engine Memory Bank on GCP.
+- **Local & Cloud Execution**: Test locally using Google ADK CLI or connect to Vertex AI Agent Engine Memory Bank on GCP.
+- **Automated CI/CD**: Deploy directly to Google Cloud Run via GitHub Actions with optional Memory Bank runtime URI configuration.
 
 ---
 
@@ -19,23 +20,25 @@ This project demonstrates how to build and deploy an AI Agent using the **Google
 adk_agent_memorybank/
 │
 ├── agent.py                 # Core ADK Agent definition with memory callbacks and tools
-├── create_memeory_bank.py   # Python script to provision a Vertex AI Agent Engine Memory Bank
+├── create_memory_bank.py    # Python script to provision a Vertex AI Agent Engine Memory Bank
+├── Dockerfile               # Production container image configuration for Cloud Run
+├── requirements.txt         # Python package dependencies
 ├── .adk/                    # Local session database (SQLite) created automatically by ADK
-└── README.md                # Project documentation & instructions
+└── README.md                # Project documentation & setup instructions
 ```
 
 ---
 
-## ⚙️ Prerequisites & Setup
+## ⚙️ Prerequisites & Environment Setup
 
 ### 1. Environment Requirements
-- **Python**: 3.10 or higher
+- **Python**: 3.11 or higher
 - **Google Cloud SDK**: Installed and authenticated
 
 ### 2. Install Required Dependencies
 
 ```bash
-pip install google-adk google-genai google-cloud-aiplatform vertexai
+pip install google-adk google-genai google-cloud-aiplatform vertexai python-dotenv langsmith
 ```
 
 ### 3. Google Cloud Authentication
@@ -46,90 +49,105 @@ Authenticate with your Google Cloud account and set your active project:
 # Login to Google Cloud
 gcloud auth application-default login
 
-# Set your active GCP project ID
+# Set active GCP project ID
 gcloud config set project YOUR_PROJECT_ID
 ```
 
 ---
 
-## 🚀 Step-by-Step Guide
+## 🧠 Creating & Provisioning Agent Memory in Vertex AI Agent Runtime
 
-### Step 1: Provision Vertex AI Memory Bank (Optional for Cloud Memory)
+To persist user memories in Vertex AI Cloud Reasoning Engines, create an Agent Engine Memory Bank resource:
 
-Edit `create_memeory_bank.py` and replace `YOUR_PROJECT_ID` with your Google Cloud project ID:
+### Step 1: Execute `create_memory_bank.py`
 
-```python
-PROJECT_ID = "your-gcp-project-id"
-LOCATION = "us-central1"
-```
-
-Run the script to create the Agent Engine Memory Bank resource on GCP:
+Verify environment variables `GOOGLE_CLOUD_PROJECT` and `GOOGLE_CLOUD_LOCATION` in your `.env` file, then run:
 
 ```bash
-python create_memeory_bank.py
+python create_memory_bank.py
 ```
 
-*Output:*
+### Step 2: Extract the Memory Service URI
+
+The script returns the created resource name:
 ```text
-Memory Bank created
-projects/<PROJECT_NUMBER>/locations/us-central1/reasoningEngines/<ENGINE_ID>
+Memory Bank created successfully!
+Resource name:
+projects/1234567890/locations/asia-south1/reasoningEngines/9876543210
+```
+
+Prefix the resource name with `agentengine://` to form the full **Memory Service URI**:
+```text
+agentengine://projects/1234567890/locations/asia-south1/reasoningEngines/9876543210
 ```
 
 ---
 
-### Step 2: Code Walkthrough (`agent.py`)
+## 💻 Running the Agent Locally
 
-`agent.py` configures the root agent with tools and automatic event persistence:
-
-1. **Memory Callback (`after_agent_callback`)**: Automatically saves conversation events to memory after every agent interaction:
-   ```python
-   async def after_agent_callback(callback_context):
-       events = callback_context.session.events
-       if events:
-           await callback_context.add_events_to_memory(events=events)
-   ```
-
-2. **Custom Tool (`employee_details`)**: Fetches structured metadata for employee IDs (`EMP001`, `EMP002`):
-   ```python
-   def employee_details(employee_id: str) -> dict:
-       ...
-   ```
-
-3. **Agent Registration (`root_agent`)**:
-   ```python
-   root_agent = Agent(
-       name="memory_demo_agent_1",
-       model="gemini-2.5-flash",
-       instruction="...",
-       tools=[PreloadMemoryTool(), employee_details],
-       after_agent_callback=after_agent_callback,
-   )
-   ```
-
----
-
-### Step 3: Run the Agent Locally
-
-#### Web UI Mode:
+### Local Mode (Container / SQLite Memory):
 ```bash
-adk web --memory_service_uri=agentengine://<engine_id>
+adk web
 ```
-*This launches a local web browser interface to chat with the agent and view session state.*
+
+### Connected to Vertex AI Agent Engine Memory Bank Runtime:
+```bash
+adk web --memory_service_uri="agentengine://projects/<PROJECT_NUMBER>/locations/<LOCATION>/reasoningEngines/<ENGINE_ID>"
+```
+
+---
+
+## 🚀 CI/CD Deployment to Google Cloud Run
+
+Deployments are automated via GitHub Actions using the `.github/workflows/deploy-cloud-run.yml` workflow.
+
+### 1. Required GitHub Secrets
+
+Configure the following secrets in your GitHub repository (**Settings > Secrets and variables > Actions**):
+
+| Secret Name | Description |
+| :--- | :--- |
+| `GCP_SA_KEY` | Service Account JSON Key with Cloud Run Admin & Artifact Registry permissions |
+| `GCP_PROJECT_ID` | Your Google Cloud Project ID |
+| `GEMINI_API_KEY` | Google Gemini API Key |
+| `LANGSMITH_API_KEY` | LangSmith API Key (optional for observability) |
+
+### 2. Required GCP Service Account Permissions
+
+Ensure the Cloud Run default runtime service account has the **Vertex AI User** role (`roles/aiplatform.user`) to communicate with Agent Engine Memory Bank:
+
+```bash
+gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member="serviceAccount:YOUR_PROJECT_NUMBER-compute@developer.gserviceaccount.com" \
+    --role="roles/aiplatform.user"
+```
+
+### 3. Triggering CI/CD Workflow
+
+1. Go to your GitHub repository -> **Actions** tab.
+2. Select **Deploy ADK Agent to Google Cloud Run**.
+3. Click **Run workflow**.
+4. Configure dispatch parameters:
+   - **Cloud Run Service Name**: `adk-agent-memorybank`
+   - **Working Directory**: `adk_agent_memorybank`
+   - **Google Cloud Region**: `asia-south1` (or your preferred region)
+   - **Memory Service URI**:`agentengine://<ENGINE_ID>` deploy with memory bank
+5. Click **Run workflow** to initiate build, image push to Artifact Registry, and Cloud Run deployment.
+
+> 💡 **Note**: If `memory_service_uri` is left blank, the container automatically falls back to local container session storage.
 
 ---
 
 ## 🧪 Testing Prompts
 
-Try the following interactions to test both tool execution and persistent memory:
-
 1. **Tool Invocation Test:**
    - *Prompt:* `"Can you give me details for employee EMP001?"`
-   - *Expected Result:* Calls `employee_details("EMP001")` and returns details for John Doe (Senior Data Engineer).
+   - *Expected Result:* Calls `employee_details("EMP001")` and returns details for John Doe.
 
 2. **Memory Persistence Test:**
    - *Prompt:* `"Remember that my favorite programming language is Python."`
    - *Next Session Prompt:* `"What is my favorite programming language?"`
-   - *Expected Result:* Uses memory to recall `"Python"`.
+   - *Expected Result:* Recalls `"Python"` from Memory Bank.
 
 ---
 
@@ -138,6 +156,6 @@ Try the following interactions to test both tool execution and persistent memory
 | Action | Command |
 | :--- | :--- |
 | **Authenticate GCP** | `gcloud auth application-default login` |
-| **Install Dependencies** | `pip install google-adk vertexai google-genai` |
-| **Create Memory Bank** | `python create_memeory_bank.py` |
-| **Run Agent via Web UI** | `adk web --memory_service_uri=agentengine://<engine_id>` |
+| **Create Memory Bank** | `python create_memory_bank.py` |
+| **Run Local Agent** | `adk web` |
+| **Run Agent with Memory Bank** | `adk web --memory_service_uri=agentengine://...` |
