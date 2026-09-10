@@ -1,10 +1,27 @@
-google-adk==2.4.0
-google-genai==2.10.0
-google-cloud-aiplatform==2.1.0
-python-dotenv
-langsmith[google-adk]==0.10.10
-uvicorn
-fastapi
+# Core Agent Framework
+google-adk>=2.4.0,<3.0.0
+google-genai>=1.0.0,<3.0.0
+google-cloud-aiplatform>=1.70.0,<3.0.0
+
+# Tracing & Observability
+langsmith[google-adk]>=0.3.0
+
+# Web Framework & Server
+fastapi>=0.110.0,<1.0.0
+uvicorn[standard]>=0.29.0,<1.0.0
+python-dotenv>=1.0.0
+
+
+
+
+
+# google-adk==2.4.0
+# google-genai==2.10.0
+# google-cloud-aiplatform==2.1.0
+# python-dotenv
+# langsmith[google-adk]==0.10.10
+# uvicorn
+# fastapi
 
 
 # google-adk
