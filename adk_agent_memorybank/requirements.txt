@@ -1,0 +1,8 @@
+google-adk>=0.1.0
+google-genai
+google-cloud-aiplatform
+vertexai
+python-dotenv
+langsmith
+uvicorn
+fastapi
