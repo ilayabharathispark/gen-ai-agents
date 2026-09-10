@@ -26,6 +26,16 @@ configure_google_adk(
 
 print("configure_google_adk() completed")
 
+from langsmith import Client
+
+try:
+    client = Client()
+    list(client.list_projects(limit=1))
+    print("========== LANGSMITH CONNECTION: SUCCESS ==========")
+except Exception as e:
+    print("========== LANGSMITH CONNECTION: FAILED ==========")
+    print(type(e).__name__, str(e))
+
 from google.adk.agents import Agent
 from google.adk.tools.preload_memory_tool import PreloadMemoryTool
 from google.adk.tools.load_memory_tool import LoadMemoryTool
