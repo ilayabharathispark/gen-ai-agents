@@ -1,9 +1,19 @@
 
 from dotenv import load_dotenv
 import os
+import langsmith
 load_dotenv()
 
 from langsmith.integrations.google_adk import configure_google_adk
+
+print("========== LANGSMITH ==========")
+print("Version:", langsmith.__version__)
+print("Module:", langsmith.__file__)
+print("TRACING:", os.getenv("LANGSMITH_TRACING"))
+print("PROJECT:", os.getenv("LANGSMITH_PROJECT"))
+print("ENDPOINT:", os.getenv("LANGSMITH_ENDPOINT"))
+print("API KEY SET:", bool(os.getenv("LANGSMITH_API_KEY")))
+print("===============================")
 
 configure_google_adk(
     project_name = os.getenv("LANGSMITH_PROJECT")
