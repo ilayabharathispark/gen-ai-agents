@@ -1,32 +1,8 @@
 import os
-import importlib.metadata
 
 from dotenv import load_dotenv
 
 load_dotenv()
-
-print("========== PACKAGE VERSIONS ==========")
-
-for package in [
-    "google-adk",
-    "google-cloud-aiplatform",
-    "langsmith",
-]:
-    try:
-        print(f"{package} = {importlib.metadata.version(package)}")
-    except Exception as e:
-        print(f"{package} VERSION ERROR: {e}")
-
-print("======================================")
-
-import langsmith
-
-print("========== LANGSMITH CONFIG ==========")
-print("LANGSMITH_TRACING:", os.getenv("LANGSMITH_TRACING"))
-print("LANGSMITH_PROJECT:", os.getenv("LANGSMITH_PROJECT"))
-print("LANGSMITH_ENDPOINT:", os.getenv("LANGSMITH_ENDPOINT"))
-print("LANGSMITH_API_KEY SET:", bool(os.getenv("LANGSMITH_API_KEY")))
-print("======================================")
 
 from langsmith.integrations.google_adk import configure_google_adk
 
@@ -37,16 +13,6 @@ configure_google_adk(
 )
 
 print("configure_google_adk() completed")
-
-from langsmith import Client
-
-try:
-    client = Client()
-    list(client.list_projects(limit=1))
-    print("========== LANGSMITH CONNECTION: SUCCESS ==========")
-except Exception as e:
-    print("========== LANGSMITH CONNECTION: FAILED ==========")
-    print(type(e).__name__, str(e))
 
 from google.adk.agents import Agent
 from google.adk.tools.preload_memory_tool import PreloadMemoryTool
