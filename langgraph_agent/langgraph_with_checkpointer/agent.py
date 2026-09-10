@@ -2,6 +2,10 @@ from typing import TypedDict
 from typing_extensions import Annotated
 import os
 from pprint import pprint
+# At the top imports — replace langchain_google_cloud_sql_pg imports with:
+from langgraph.checkpoint.memory import MemorySaver
+
+
 
 from dotenv import load_dotenv
 from langgraph.graph import StateGraph, START, END
@@ -207,20 +211,29 @@ from langchain_google_cloud_sql_pg import (
     PostgresSaver
 )
 
-engine = PostgresEngine.from_instance(
-    project_id=os.getenv("CLOUD_SQL_PROJECT_ID"), # check these values in .env file if not present, then go to cloud.google.com -> Cloud SQL -> create postgresql instance -> select your instance -> overview
-    region=os.getenv("CLOUD_SQL_REGION"),
-    instance=os.getenv("CLOUD_SQL_INSTANCE"),
-    database=os.getenv("CLOUD_SQL_DATABASE"),
-    user=os.getenv("CLOUD_SQL_USER"),
-    password=os.getenv("CLOUD_SQL_PASSWORD")
+# engine = PostgresEngine.from_instance(
+#     project_id=os.getenv("CLOUD_SQL_PROJECT_ID"), # check these values in .env file if not present, then go to cloud.google.com -> Cloud SQL -> create postgresql instance -> select your instance -> overview
+#     region=os.getenv("CLOUD_SQL_REGION"),
+#     instance=os.getenv("CLOUD_SQL_INSTANCE"),
+#     database=os.getenv("CLOUD_SQL_DATABASE"),
+#     user=os.getenv("CLOUD_SQL_USER"),
+#     password=os.getenv("CLOUD_SQL_PASSWORD")
+# )
+
+# # engine.init_checkpoint_table() # create table in cloud sql first time required
+
+# checkpointer = PostgresSaver.create_sync(engine)
+# # Compile graph
+
+# Replace the entire PostgresEngine/PostgresSaver block (lines ~205-221) with:
+checkpointer = MemorySaver()
+
+# Compile with HITL interrupt:
+graph = graph_builder.compile(
+    checkpointer=checkpointer,
+    interrupt_before=["tools"]  # <-- pause before any tool runs
 )
-
-# engine.init_checkpoint_table()
-
-checkpointer = PostgresSaver.create_sync(engine)
-# Compile graph
-graph = graph_builder.compile(checkpointer=checkpointer)
+# graph = graph_builder.compile() # checkpointer=checkpointer
 
 
 # --------------------------------------------------
@@ -228,18 +241,53 @@ graph = graph_builder.compile(checkpointer=checkpointer)
 # --------------------------------------------------
 
 if __name__ == "__main__":
-    # Test 1: Query database
-    print("\n---Cooking---")
-    query_1 = "what is my mother name?"
+
+    # ✅ List of approved user IDs allowed to access personal details
+    APPROVED_USER_IDS = ["ilaya001", "admin", "bharathi123"]
+
     config = {
         "configurable": {
-            "thread_id": "ilaya"
+            "thread_id": "ilaya-hitl"
         }
     }
-    result_1 = graph.invoke({
-        "messages": [HumanMessage(content=query_1)]
-    },config
+
+    user_input = input("You: ").strip()
+
+    # Step 1: Invoke — graph pauses before 'tools' node
+    result = graph.invoke(
+        {"messages": [HumanMessage(content=user_input)]},
+        config
     )
-    
-    print("---Cooked---")
-    print(result_1["messages"][-1].content)
+
+    last_message = result["messages"][-1]
+
+    # Step 2: Check if graph paused at a tool call
+    if last_message.tool_calls:
+
+        # Check if any pending call is 'get_my_details'
+        personal_calls = [tc for tc in last_message.tool_calls if tc["name"] == "get_my_details"]
+
+        if personal_calls:
+            # 🔐 Personal details requested — verify user identity
+            print("\n🔐 This query accesses personal details. Identity verification required.")
+            user_id = input("Enter your User ID: ").strip()
+
+            if user_id in APPROVED_USER_IDS:
+                print(f"✅ User '{user_id}' verified. Proceeding...\n")
+                # Resume graph from checkpoint
+                result = graph.invoke(None, config)
+                print("📋 Answer:")
+                print(result["messages"][-1].content)
+            else:
+                print(f"❌ Access Denied: User ID '{user_id}' is not authorized.")
+        else:
+            # Other tools (BigQuery, search) — auto-proceed
+            print(f"\n🔧 Calling tool: {last_message.tool_calls[0]['name']}...\n")
+            result = graph.invoke(None, config)
+            print("📋 Answer:")
+            print(result["messages"][-1].content)
+
+    else:
+        # No tool needed — direct answer
+        print("\n📋 Answer:")
+        print(last_message.content)
