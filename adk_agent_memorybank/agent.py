@@ -1,3 +1,23 @@
+import importlib.metadata
+
+print("========== PACKAGE VERSIONS ==========")
+
+for package in [
+    "google-adk",
+    "google-cloud-aiplatform",
+    "langsmith",
+]:
+    try:
+        print(
+            package,
+            "=",
+            importlib.metadata.version(package)
+        )
+    except Exception as e:
+        print(package, "VERSION ERROR:", str(e))
+
+print("======================================")
+
 import os
 from dotenv import load_dotenv
 
