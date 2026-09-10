@@ -1,12 +1,17 @@
 
-from . import observability #this import is mandatory for langsmith tracing
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+from langsmith.integrations.google_adk import configure_google_adk
+
+configure_google_adk(
+    project_name = os.getenv("LANGSMITH_PROJECT")
+)
+ #this import is mandatory for langsmith tracing
 from google.adk.agents import Agent
 from google.adk.tools.preload_memory_tool import PreloadMemoryTool
 from google.adk.tools.load_memory_tool import LoadMemoryTool
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 
 async def after_agent_callback(callback_context):

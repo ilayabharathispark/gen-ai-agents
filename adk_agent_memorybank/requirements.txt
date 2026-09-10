@@ -2,7 +2,7 @@ google-adk
 google-genai
 google-cloud-aiplatform[agent_engines,adk]>=1.111.0,<2.0.0
 python-dotenv
-langsmith
+langsmith[google-adk]
 uvicorn
 fastapi
 
