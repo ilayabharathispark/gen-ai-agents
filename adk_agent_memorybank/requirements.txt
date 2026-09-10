@@ -1,8 +1,16 @@
-google-adk>=0.1.0
+google-adk
 google-genai
-google-cloud-aiplatform
-vertexai
+google-cloud-aiplatform[agent_engines,adk]>=1.111.0,<2.0.0
 python-dotenv
 langsmith
 uvicorn
 fastapi
+
+# google-adk>=0.1.0
+# google-genai
+# google-cloud-aiplatform
+# vertexai
+# python-dotenv
+# langsmith
+# uvicorn
+# fastapi
