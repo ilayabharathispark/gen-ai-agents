@@ -24,5 +24,6 @@ COPY . .
 # Expose port
 EXPOSE 8080
 
-# Launch ADK Web server on specified Cloud Run port
-CMD ["sh", "-c", "adk web --host 0.0.0.0 --port ${PORT}"]
+# Launch ADK Web server on specified Cloud Run port (with optional Memory Bank URI)
+CMD ["sh", "-c", "if [ -n \"$MEMORY_SERVICE_URI\" ]; then adk web --host 0.0.0.0 --port ${PORT} --memory_service_uri \"$MEMORY_SERVICE_URI\"; else adk web --host 0.0.0.0 --port ${PORT}; fi"]
+

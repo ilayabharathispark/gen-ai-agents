@@ -24,6 +24,11 @@ on:
           - us-west1
           - asia-south1
           - europe-west1
+      memory_service_uri:
+        description: 'Memory Service URI (e.g. agentengine://projects/.../locations/.../reasoningEngines/...)'
+        required: false
+        default: ''
+        type: string
 
 jobs:
   deploy:
@@ -76,7 +81,9 @@ jobs:
             GOOGLE_CLOUD_LOCATION=${{ inputs.region }}
             GOOGLE_GENAI_USE_VERTEXAI=true
             GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            MEMORY_SERVICE_URI=${{ inputs.memory_service_uri }}
             LANGSMITH_TRACING=True
             LANGSMITH_ENDPOINT=https://api.smith.langchain.com
             LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}
             LANGSMITH_PROJECT=memory-adk
+
