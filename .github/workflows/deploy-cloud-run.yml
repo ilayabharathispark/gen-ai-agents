@@ -74,6 +74,8 @@ jobs:
           env_vars: |
             GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }}
             GOOGLE_CLOUD_LOCATION=${{ inputs.region }}
+            GOOGLE_GENAI_USE_VERTEXAI=true
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
             LANGSMITH_TRACING=True
             LANGSMITH_ENDPOINT=https://api.smith.langchain.com
             LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}
