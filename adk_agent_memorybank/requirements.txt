@@ -1,10 +1,9 @@
 # Core Agent Framework
-google-adk>=2.4.0,<3.0.0
-google-genai>=1.0.0,<3.0.0
-google-cloud-aiplatform>=1.114.0,<3.0.0
+google-adk==2.9.1
+google-genai==2.23.0
 
 # Tracing & Observability
-langsmith[google-adk]>=0.3.0
+langsmith[google-adk]==0.12.5
 
 # Web Framework & Server
 fastapi>=0.110.0,<1.0.0
