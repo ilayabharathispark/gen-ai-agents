@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from dotenv import load_dotenv
@@ -87,9 +88,19 @@ async def after_agent_callback(callback_context):
 
     # ── Long-term: push events to InMemory / Vertex AI MemoryBank ──
     try:
-        # Call add_events_to_memory without re-passing all past events.
-        # ADK automatically handles un-ingested session events.
-        await callback_context.add_events_to_memory()
+        # Pass required keyword argument events=events
+        await callback_context.add_events_to_memory(events=events)
+
+        # ADK's VertexMemoryBankService spawns a background `ingest_events` task.
+        # Wait for background ingestion tasks to complete before this callback exits
+        # so ADK's runner doesn't close the underlying HTTP client prematurely.
+        current_task = asyncio.current_task()
+        pending_tasks = [
+            t for t in asyncio.all_tasks()
+            if t != current_task and not t.done()
+        ]
+        if pending_tasks:
+            await asyncio.gather(*pending_tasks, return_exceptions=True)
     except Exception as e:
         import logging
         logging.warning(f"Memory Bank event ingestion warning: {e}")
