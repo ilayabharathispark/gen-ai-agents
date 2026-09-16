@@ -1,8 +1,7 @@
 # Core Agent Framework
 google-adk>=2.4.0,<3.0.0
 google-genai>=1.0.0,<3.0.0
-google-cloud-aiplatform>=1.70.0,<3.0.0
-vertexai>=1.70.0,<3.0.0
+google-cloud-aiplatform>=1.114.0,<3.0.0
 
 # Tracing & Observability
 langsmith[google-adk]>=0.3.0

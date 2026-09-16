@@ -5,6 +5,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Explicitly import vertexai and its types submodule so vertexai.types is populated
+import vertexai
+try:
+    import vertexai.types
+except ImportError:
+    pass
+
+
 import json
 
 from langsmith.integrations.google_adk import configure_google_adk
