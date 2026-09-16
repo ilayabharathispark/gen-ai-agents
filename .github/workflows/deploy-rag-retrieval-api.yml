@@ -71,20 +71,12 @@ jobs:
           gcloud builds submit --tag $IMAGE_URI .
 
       - name: Deploy to Cloud Run
-        run: |
-          IMAGE_URI="${{ inputs.region }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/agent/${{ inputs.service_name }}:${{ github.sha }}"
-          echo "=========================================================="
-          echo "☸️ Deploying to Cloud Run (${{ inputs.service_name }})..."
-          echo "=========================================================="
-          gcloud run deploy ${{ inputs.service_name }} \
-            --image $IMAGE_URI \
-            --region ${{ inputs.region }} \
-            --platform managed \
-            --allow-unauthenticated \
-            --memory ${{ inputs.memory }} \
-            --set-env-vars \
-              QDRANT_END_POINT=${{ secrets.QDRANT_END_POINT }},\
-              QDRANT_API=${{ secrets.QDRANT_API }}
-          echo "=========================================================="
-          echo "✅ Deployment completed successfully!"
-          echo "=========================================================="
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ inputs.service_name }}
+          region: ${{ inputs.region }}
+          image: ${{ inputs.region }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/agent/${{ inputs.service_name }}:${{ github.sha }}
+          flags: '--allow-unauthenticated --memory=${{ inputs.memory }}'
+          env_vars: |
+            QDRANT_END_POINT=${{ secrets.QDRANT_END_POINT }}
+            QDRANT_API=${{ secrets.QDRANT_API }}
