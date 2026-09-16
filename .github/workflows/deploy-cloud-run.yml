@@ -79,7 +79,7 @@ jobs:
           env_vars: |
             GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }}
             GOOGLE_CLOUD_LOCATION=${{ inputs.region }}
-            GOOGLE_GENAI_API_KEY=${{ secrets.GOOGLE_GENAI_API_KEY }}
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
             GOOGLE_GENAI_USE_VERTEXAI=false
             MEMORY_SERVICE_URI=${{ inputs.memory_service_uri }}
             REDIS_URL=${{ secrets.REDIS_URL }}
