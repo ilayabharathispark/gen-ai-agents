@@ -86,7 +86,14 @@ async def after_agent_callback(callback_context):
         redis_memory.add_turn(session_id, role, text)
 
     # ── Long-term: push events to InMemory / Vertex AI MemoryBank ──
-    await callback_context.add_events_to_memory(events=events)
+    try:
+        # Call add_events_to_memory without re-passing all past events.
+        # ADK automatically handles un-ingested session events.
+        await callback_context.add_events_to_memory()
+    except Exception as e:
+        import logging
+        logging.warning(f"Memory Bank event ingestion warning: {e}")
+
 
 
 # ─────────────────────────────────────────────
