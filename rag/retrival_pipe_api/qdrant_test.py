@@ -17,7 +17,7 @@ print("Collections:", [col.name for col in collections.collections])
 COLLECTION_NAME = "my_agent_collection"
 points, _ = client.scroll(
     collection_name=COLLECTION_NAME,
-    limit=3,
+    limit=10,
     with_payload=True,
     with_vectors=False,
 )

@@ -24,7 +24,7 @@ QDRANT_API_KEY = os.getenv("QDRANT_API") #add your api key
 
 COLLECTION_NAME = "my_agent_collection" #add your collection name or index name
 
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2" #add your embedding model
+EMBEDDING_MODEL = "sentence-transformers/all-mpnet-base-v2" #add your embedding model
 
 # ==========================================================
 # VALIDATION OUTPUT DIRECTORIES CONFIG
