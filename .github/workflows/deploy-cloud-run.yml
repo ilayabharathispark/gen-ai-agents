@@ -82,6 +82,9 @@ jobs:
             GOOGLE_GENAI_USE_VERTEXAI=false
             GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
             MEMORY_SERVICE_URI=${{ inputs.memory_service_uri }}
+            REDIS_URL=${{ secrets.REDIS_URL }}
+            REDIS_SESSION_TTL=7200
+            REDIS_CONTEXT_WINDOW=10
             LANGSMITH_TRACING=true
             LANGSMITH_ENDPOINT=https://api.smith.langchain.com
             LANGSMITH_API_KEY=${{ secrets.LANGSMITH_API_KEY }}

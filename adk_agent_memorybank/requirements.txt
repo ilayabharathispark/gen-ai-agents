@@ -11,34 +11,6 @@ fastapi>=0.110.0,<1.0.0
 uvicorn[standard]>=0.29.0,<1.0.0
 python-dotenv>=1.0.0
 
-
-
-
-
-# google-adk==2.4.0
-# google-genai==2.10.0
-# google-cloud-aiplatform==2.1.0
-# python-dotenv
-# langsmith[google-adk]==0.10.10
-# uvicorn
-# fastapi
-
-
-# google-adk
-# google-genai
-# google-cloud-aiplatform[agent_engines,adk]>=1.111.0,<2.0.0
-# python-dotenv
-# langsmith[google-adk]
-# uvicorn
-# fastapi
-
-# google-adk>=0.1.0
-# google-genai
-# google-cloud-aiplatform
-# vertexai
-# python-dotenv
-# langsmith
-# uvicorn
-# fastapi
-
-
+# Short-Term Session Memory (Redis Cloud)
+redis>=5.0.0,<6.0.0
+hiredis>=2.3.0

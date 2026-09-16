@@ -5,7 +5,7 @@ url = "https://rag-retrieval-api-640900979202.asia-south1.run.app/search"
 
 payload = {
     "collection": "my_agent_collection",
-    "query": "can you explain the benefits?",
+    "query": "can you explain about ADK?",
     "limit": 3
 }
 

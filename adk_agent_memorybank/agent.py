@@ -4,64 +4,104 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+import json
+
 from langsmith.integrations.google_adk import configure_google_adk
 
-print("Calling configure_google_adk()")
-
-configure_google_adk(
-    project_name=os.getenv("LANGSMITH_PROJECT")
-)
-
-print("configure_google_adk() completed")
+configure_google_adk(project_name=os.getenv("LANGSMITH_PROJECT"))
 
 from google.adk.agents import Agent
-from google.adk.tools.preload_memory_tool import PreloadMemoryTool
 from google.adk.tools.load_memory_tool import LoadMemoryTool
 
+from .memory import RedisMemoryManager
 
+# ─────────────────────────────────────────────
+# Initialise short-term memory (Redis Cloud)
+# ─────────────────────────────────────────────
+redis_memory = RedisMemoryManager()
+
+
+# ─────────────────────────────────────────────
+# STEP A — Before the agent replies
+# ─────────────────────────────────────────────
+async def before_agent_callback(callback_context):
+    """
+    Runs before the agent processes each user message.
+
+    Reads the last 10 turns from Redis and injects them into the agent's
+    instruction via {short_term_context}.
+
+    FIX: We only store short_term_context in ADK state (needed for template
+    substitution). We do NOT store session_id in state — ADK's internal
+    protobuf session serialization can turn UUID strings into bytes when
+    passing through its state system, which causes LangSmith's json.dumps
+    to crash. Instead, we read session_id directly from session.id everywhere.
+    """
+    session_id = callback_context.session.id
+
+    # Read recent history from Redis and format it as readable text
+    context = redis_memory.build_context_string(session_id)
+
+    # Store ONLY short_term_context in state (required for {short_term_context}
+    # template substitution in the instruction).
+    # Explicitly cast to str to prevent any accidental bytes leaking into state.
+    callback_context.state["short_term_context"] = str(context)
+
+
+# ─────────────────────────────────────────────
+# STEP B — After the agent replies
+# ─────────────────────────────────────────────
 async def after_agent_callback(callback_context):
+    """
+    Runs after the agent produces its response.
 
-    print("========== AFTER AGENT ==========")
-
+    FIX: Read session_id directly from callback_context.session.id instead
+    of from state. This avoids any protobuf bytes round-trip through ADK state.
+    """
+    # Get session_id directly — never via state
+    session_id = callback_context.session.id
     events = callback_context.session.events
 
-    if events:
-        await callback_context.add_events_to_memory(
-            events=events
-        )
+    if not events:
+        return
+
+    # ── Short-term: save each turn to Redis ──
+    for event in events:
+        if not hasattr(event, "content") or not event.content:
+            continue
+
+        # Extract text parts only (ignore function_call / function_response parts)
+        text_parts = [
+            str(part.text)                          # explicit str() — no bytes
+            for part in event.content.parts
+            if hasattr(part, "text") and part.text
+        ]
+
+        if not text_parts:
+            continue
+
+        role = "user" if event.author == "user" else "agent"
+        text = " ".join(text_parts).strip()
+
+        redis_memory.add_turn(session_id, role, text)
+
+    # ── Long-term: push events to InMemory / Vertex AI MemoryBank ──
+    await callback_context.add_events_to_memory(events=events)
 
 
+# ─────────────────────────────────────────────
+# Tool — Employee lookup
+# ─────────────────────────────────────────────
 def employee_details(employee_id: str) -> dict:
     """
     Retrieve employee details using the employee ID.
 
-    This tool returns basic employee information such as name,
-    department, designation, location, years of experience,
-    and technical skills.
-
     Args:
-        employee_id: Unique identifier of the employee.
-            Example: "EMP001"
+        employee_id: Unique identifier of the employee. Example: "EMP001"
 
     Returns:
-        A dictionary containing the employee's details if the
-        employee ID exists. If the employee is not found, returns
-        a dictionary containing an error message.
-
-    Examples:
-        employee_details("EMP001")
-
-        Returns:
-            {
-                "name": "John Doe",
-                "department": "Data Engineering",
-                "designation": "Senior Data Engineer",
-                "location": "Chennai",
-                "experience": 6,
-                "skills": ["Python", "PySpark", "GCP", "SQL"]
-            }
+        A dictionary with employee info, or an error message if not found.
     """
-
     employees = {
         "EMP001": {
             "name": "John Doe",
@@ -81,33 +121,29 @@ def employee_details(employee_id: str) -> dict:
         },
     }
 
-    return employees.get(
-        employee_id,
-        {"error": "Employee not found"}
-    )
+    return employees.get(employee_id, {"error": "Employee not found"})
 
 
-
+# ─────────────────────────────────────────────
+# Root Agent
+# ─────────────────────────────────────────────
 root_agent = Agent(
     name="memory_demo_agent_1",
-
     model="gemini-2.5-flash",
 
     instruction="""
     You are a helpful assistant.
 
-    if user asked about employyee details use employee_details() tools to fetch answer
+    {short_term_context}
 
+    If the user asks about employee details, use the employee_details() tool.
     Use information from memory when it is relevant.
-
-    if user asked about general question answer from your knowledge
+    If the user asks a general question, answer from your knowledge.
     Never invent memories.
     """,
 
-    tools=[
-        LoadMemoryTool(),employee_details
-    ],
+    tools=[LoadMemoryTool(), employee_details],
 
-    after_agent_callback=after_agent_callback, 
-
+    before_agent_callback=before_agent_callback,
+    after_agent_callback=after_agent_callback,
 )
