@@ -75,11 +75,12 @@ jobs:
           service: ${{ inputs.service_name }}
           region: ${{ inputs.region }}
           image: ${{ inputs.region }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/agent/${{ inputs.service_name }}:${{ github.sha }}
-          flags: '--allow-unauthenticated'
+          flags: '--allow-unauthenticated --no-cpu-throttling'
           env_vars: |
             GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }}
             GOOGLE_CLOUD_LOCATION=${{ inputs.region }}
-            GOOGLE_GENAI_USE_VERTEXAI=true
+            GOOGLE_GENAI_API_KEY=${{ secrets.GOOGLE_GENAI_API_KEY }}
+            GOOGLE_GENAI_USE_VERTEXAI=false
             MEMORY_SERVICE_URI=${{ inputs.memory_service_uri }}
             REDIS_URL=${{ secrets.REDIS_URL }}
             REDIS_SESSION_TTL=7200
