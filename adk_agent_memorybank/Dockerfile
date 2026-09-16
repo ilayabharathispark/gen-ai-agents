@@ -28,4 +28,5 @@ USER appuser
 EXPOSE 8080
 
 # Use 'exec' so adk receives SIGTERM for graceful shutdown on Cloud Run
-CMD ["sh", "-c", "if [ -n \"$MEMORY_SERVICE_URI\" ]; then exec adk web --host 0.0.0.0 --port ${PORT} --memory_service_uri \"$MEMORY_SERVICE_URI\"; else exec adk web --host 0.0.0.0 --port ${PORT}; fi"]
+# CMD ["sh", "-c", "if [ -n \"$MEMORY_SERVICE_URI\" ]; then exec adk web --host 0.0.0.0 --port ${PORT} --memory_service_uri \"$MEMORY_SERVICE_URI\"; else exec adk web --host 0.0.0.0 --port ${PORT}; fi"]
+CMD ["sh", "-c", "if [ -n \"$MEMORY_SERVICE_URI\" ]; then exec adk web . --host 0.0.0.0 --port ${PORT} --memory_service_uri \"$MEMORY_SERVICE_URI\"; else exec adk web . --host 0.0.0.0 --port ${PORT}; fi"]
