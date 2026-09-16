@@ -30,19 +30,22 @@ class RedisMemoryManager:
         # We only need the last 10 messages — no need to feed the entire history
         self.context_window = int(os.getenv("REDIS_CONTEXT_WINDOW", "10"))
 
-    def add_turn(self, session_id: str, role: str, content: str):
+    def add_turn(self, session_id: str, role: str, content: str = "", text: str = None):
         """
         Save one message turn to Redis.
 
         session_id : unique ID of the current conversation
         role       : "user" or "agent"
-        content    : the actual message text
+        content    : the actual message text (can also be passed as 'text')
         """
+        message_text = text if text is not None else content
+
         # The Redis key looks like: session:abc123:history
         key = f"session:{session_id}:history"
 
         # Convert the turn dict to a JSON string so Redis can store it
-        turn = json.dumps({"role": role, "content": content})
+        turn = json.dumps({"role": role, "content": message_text})
+
 
         # rpush → append to the end of the list
         # expire → reset the 2-hour TTL countdown on every new message

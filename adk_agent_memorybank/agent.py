@@ -94,24 +94,19 @@ async def after_agent_callback(callback_context):
 
         redis_memory.add_turn(session_id, role, text)
 
-    # ── Long-term: push events to InMemory / Vertex AI MemoryBank ──
+    # ── Long-term: push to Vertex AI MemoryBank ──
     try:
-        # Pass required keyword argument events=events
-        await callback_context.add_events_to_memory(events=events)
-
-        # ADK's VertexMemoryBankService spawns a background `ingest_events` task.
-        # Wait for background ingestion tasks to complete before this callback exits
-        # so ADK's runner doesn't close the underlying HTTP client prematurely.
-        current_task = asyncio.current_task()
-        pending_tasks = [
-            t for t in asyncio.all_tasks()
-            if t != current_task and not t.done()
-        ]
-        if pending_tasks:
-            await asyncio.gather(*pending_tasks, return_exceptions=True)
+        # Use add_session_to_memory(), the official ADK method for after_agent_callback.
+        # This properly awaits memory generation on Vertex AI and avoids the broken
+        # background ingest_events task that fails when the HTTP client closes.
+        if hasattr(callback_context, "add_session_to_memory"):
+            await callback_context.add_session_to_memory()
+        else:
+            await callback_context.add_events_to_memory(events=events)
     except Exception as e:
         import logging
-        logging.warning(f"Memory Bank event ingestion warning: {e}")
+        logging.warning(f"Memory Bank ingestion warning: {e}")
+
 
 
 
