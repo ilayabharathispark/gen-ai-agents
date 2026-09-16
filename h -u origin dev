@@ -1,0 +1,61 @@
+* [33mfe6c5f6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m dev-v5
+[31m|[m * [33mca16c76[m[33m ([m[1;31morigin/dev[m[33m)[m Replace GOOGLE_GENAI_API_KEY with GEMINI_API_KEY
+[31m|[m[31m/[m  
+* [33m0900b97[m dev-v4
+* [33md64e30f[m dev-v3
+* [33mde20ba5[m dev-v3
+* [33ma9aa905[m dev-v2
+* [33m72997f0[m dev-v1
+* [33m1582d48[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m redis_added_v6
+* [33m3f8d23e[m redis_added_v5
+* [33md480c7f[m redis_added_v4
+* [33m5b62f59[m redis_added_v3
+* [33mca40fd0[m redis_added_v2
+* [33ma13d218[m redis_added
+* [33m8526d46[m update_rag_github_actions_v2
+* [33m5d32249[m update_rag_github_actions
+* [33me585c01[m your commit messagerag_update
+* [33mbc639be[m sh_update
+* [33mfebe08c[m sh_update
+* [33m56f83c7[m readme_update
+* [33m448d13b[m final_fix
+* [33m079bf1c[m req_update_v2
+* [33m5e85941[m req_update
+* [33m2d721d0[m update_langsmith_trace_v6
+* [33mefc0c6f[m update_langsmith_trace_v5
+* [33m4bcf646[m update_langsmith_trace_v4
+* [33m83eb6c6[m update_langsmith_trace_v3
+* [33mfd02244[m update_langsmith_trace_v2
+* [33mf5c949a[m update_langsmith_trace
+* [33mf3d875c[m update_requirement.txt
+* [33mbbcd6e1[m memory service uri added
+* [33me20435a[m cicd added v3
+* [33m137f806[m cicd added v2
+* [33m0558e02[m cicd added
+* [33mfd9e353[m update_adk_memory
+* [33m3beae26[m added postgre checkpointer
+* [33mf9e5d21[m update-langgraph-bq-agent
+* [33mffdecbc[m feat: implement basic LangGraph agent with tool-calling capabilities and add project dependencies
+* [33m8d43120[m feat: implement LangGraph agent with weather tool and add Qdrant retrieval test script
+* [33maf3c7e5[m feat: add observability.py to enable LangSmith tracing for Google ADK environments
+*   [33m1ddbd62[m Resolve merge conflict in my_agent/agent.py and update deployment scripts
+[33m|[m[34m\[m  
+[33m|[m * [33m0cdee4d[m Remove 'name' from agent query list
+[33m|[m * [33m2458a61[m Update readme with LangSmith URL
+* [34m|[m [33mdaa9d87[m update_ingestion_deploy_my_agent
+[34m|[m[34m/[m  
+* [33mf5a9155[m update_readme
+* [33m715dc96[m Add test_agent_langsmith module with LangSmith integration
+* [33mc1f8c74[m refactor: restructure rag directory into subprojects and update my_agent/agent.py
+* [33m5bb3ef6[m feat: implement Streamlit RAG chatbot with database isolation, incremental loading, and Cloud Run Docker config
+* [33meeb381b[m Add Dockerfile, requirements, FastAPI entrypoint, and deployment documentation
+* [33m4c80843[m Replace salary_agent with hr_agent and append four employee ID-focused tools in bq_mcp_server.py
+* [33m9d82418[m Configure service account credentials for bq_mcp_server and set up salary_agent
+* [33md23251c[m Add run_adk.bat interactive helper script
+* [33m8d4beb8[m Add README documentation for MCP setup
+* [33m17d6cba[m Add basic MCP server configuration and dependencies
+* [33mfabe9a1[m Add my_mcp/server.py
+* [33m45d9c32[m docs: clarify that separate groq SDK package is not required in README
+* [33m3e1f588[m docs: add litellm dependency and groq configuration info to README
+* [33m92a6abf[m add setup files and agent codebase
+* [33mbea3e9d[m Initial commit with README.md
