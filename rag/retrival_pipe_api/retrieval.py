@@ -8,7 +8,7 @@ QDRANT_API_KEY = os.getenv("QDRANT_API")
 
 # Loaded once when the container starts
 embedding_model = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
+    model_name="sentence-transformers/all-mpnet-base-v2"
 )
 
 client = QdrantClient(
