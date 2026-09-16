@@ -17,6 +17,6 @@ echo "📝 Committing: \"$COMMIT_MSG\"..."
 git commit -m "$COMMIT_MSG"
 
 echo "🚀 Pushing to remote..."
-git push origin main
+git push origin dev
 
 echo "✅ Successfully pushed to remote repository!"
